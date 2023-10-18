@@ -1,0 +1,39 @@
+doctype html
+html(lang="en")
+    head
+        title Play Ground
+
+    body
+    header
+        h1 Sandbox 
+    section#content 
+        h2= prompt
+        ol 
+            each color in colors 
+                li= color 
+        if hint 
+            i Hint: #{hint}
+        
+    section#tables 
+        //Making tables
+        table(style='width:100%', border='1')
+            tr 
+                th FirstName 
+                th LastName 
+                th City 
+            tr
+                td Angelique 
+                td Mbabazi 
+                td South Bend 
+            tr 
+                td Grace 
+                td Ishimwe 
+                td Houston 
+            tr 
+                td Belise 
+                td Kunda 
+                td Mississipi
+
+
+    footer 
+        p Practicing my Pug skills
