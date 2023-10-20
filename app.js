@@ -15,69 +15,47 @@ const colors = [
 const app = express(); //returns express app
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
-
 //set upg
 app.set('view engine', 'pug'); //pug is the template engine
 
+const mainRoutes = require('./routes/index.js') //or '/.routes' cz index is by default
+const cardRoutes = require('./routes/cards');
 
-//root route
-// app.get('/', (req, res) => {
-//     res.send('<h1>I love God!</h1>');
-// }); //get request to a certain URL
+app.use(mainRoutes);
+app.use('/cards', cardRoutes);
+//Middleware
 
-app.get('/', (req, res) => {
-    const name = req.cookies.username;
-    if (name) {
-        res.render('index', {name: name});//since it knows the the template file is .pug, you don't need to write index.pug
-    } else {
-        res.redirect('/hello');
-    }
-    
+// app.use((req, res, next) => {
+//     //req.message = 'Hello'
+//     console.log('Hello');
+//     const err = new Error('On noes!')
+//     err.status = 500;
+//     next(err);
+// })
+
+// }, (req, res, next) => {
+//     console.log('One and a half');
+//     next();
+// });
+
+app.use((req, res, next) => {
+    //console.log(req.message);
+    console.log('World');
+    next();
 });
 
-//another route
-app.get('/cards', (req, res) => {
-    
-    res.render('card', {prompt:"Who is Jesus?"})
-}); //get request to a certain URL
-
-//playground route
-app.get('/sandbox', (req, res) => {
-    //the second parameters inside render() are called locals and they are optional
-    //res.locals.prompt = "Who is Jesus' Father?" //flashcard question
-    //res.render('card');
-    //res.render('card', {prompt: "Who is Jesus' father?", hint: "Think about the creator of heaven and earth"});
-    res.render('sandbox', {prompt: "This will be fun!", colors, hint:"You are awesome"});
+//Page not found
+app.use((req, res, next) => {
+    const err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
-//Hello route
-app.get('/hello', (req, res) => {
-    const name = req.cookies.username;
-    if(name) {
-        res.redirect('/');
-    } else {
-        res.render('hello');
-    }
-    
-});
-//makes sure the hello route posts the form input in the template
-//Then we can do something with the data we get from the user
-app.post('/hello', (req, res) => {
-    //res.json(req.body);
-    res.cookie('username', req.body.username);
-    //res.render('hello', {name: req.body.username});
-
-    //redirect people to welcome page after submitting form
-    res.redirect('/')
-});
-
-//Goodbye
-app.post('/goodbye', (req, res) => {
-    const name = req.cookies.username;
-    if(name) {
-        res.clearCookie('username');
-        res.redirect('/hello');
-    }
+//error handler
+app.use((err,req,res,next) => {
+    res.locals.error = err;
+    res.status(err.status);
+    res.render('error');
 });
 
 app.listen(3000, () => {
